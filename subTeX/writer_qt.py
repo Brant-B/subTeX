@@ -7,6 +7,7 @@ from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase
 MM = 25.4 / 72
 PT = 1200 / 72
 
+
 class QtWriter(object):
 
     def __init__(self, path, width_pt, height_pt):
@@ -31,9 +32,10 @@ class QtWriter(object):
 
     def get_fonts(self, font_specs):
         fonts = {}
+        database = QFontDatabase()
         for key, family, style, size in font_specs:
-            weight = QFontDatabase.weight(family, style)
-            qt_font = QFontDatabase.font(family, style, size)
+            weight = database.weight(family, style)
+            qt_font = database.font(family, style, size)
             actual_family = qt_font.family()
             if weight == -1 or family != actual_family:
                 print('Cannot find font: {!r} {!r}'.format(family, style))
@@ -53,6 +55,7 @@ class QtWriter(object):
 
     def draw_text(self, x_pt, y_pt, text):
         self.painter.drawText(x_pt * PT, y_pt * PT, text)
+
 
 class QtFont(object):
     def __init__(self, qt_font, metrics):
