@@ -1,14 +1,16 @@
-"""Classes that support Knuth TeX-style paragraph breaking."""
+"""
+Classes that support Knuth TeX-style paragraph breaking.
+"""
 
 import re
-from .texlib_wrap import ObjectList, Box, Glue, Penalty
+from .texlib import ObjectList, Box, Glue, Penalty
 from .hyphenate import hyphenate_word
 
 _zero_width_break = Glue(0, 0, 0)
 
+
 def knuth_paragraph(actions, a, fonts, line, next_line,
                     indent, first_indent, fonts_and_texts):
-
     font_name = fonts_and_texts[0][0]
     font = fonts[font_name]
     width_of = font.width_of
@@ -19,22 +21,19 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
     height = max(fonts[name].height for name, text in fonts_and_texts)
 
     line = next_line(line, leading, height)
-    line_lengths = [line.column.width]  # TODO: support interesting shapes
+    line_lengths = [line.column.width]
 
     if first_indent is True:
         first_indent = font.height
 
     olist = ObjectList()
-    # olist.debug = True
+    olist.debug = True
 
     if first_indent:
         olist.append(Glue(first_indent, 0, 0))
 
-    # TODO: get rid of this since it changes with the font?  Compute
-    # and pre-cache them in each metrics cache?
     space_width = width_of('m m') - width_of('mm')
 
-    # TODO: should do non-breaking spaces with glue as well
     space_glue = Glue(space_width, space_width * .5, space_width * .3333)
 
     indented_lengths = [length - indent for length in line_lengths]
@@ -46,11 +45,11 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
         olist.extend(boxes)
 
     if olist[-1] is space_glue:
-        olist.pop()             # ignore trailing whitespace
+        olist.pop()  # ignore trailing whitespace
 
     olist.add_closing_penalty()
 
-    for tolerance in 1, 2, 3, 4, 5, 6, 7:  # TODO: went to 7 to avoid errors
+    for tolerance in 1, 2, 3, 4, 5, 6, 7:
         try:
             breaks = olist.compute_breakpoints(
                 indented_lengths, tolerance=tolerance)
@@ -59,19 +58,17 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
         else:
             break
     else:
-        print('FAIL')  # TODO
-        breaks = [0, len(olist) - 1]  # TODO
+        print('FAIL')
+        breaks = [0, len(olist) - 1]
 
     assert breaks[0] == 0
     start = 0
-
-    font = 'body-roman'
 
     for i, breakpoint in enumerate(breaks[1:]):
         r = olist.compute_adjustment_ratio(start, breakpoint, i,
                                            indented_lengths)
 
-        #r = 1.0
+        # r = 1.0
 
         xlist = []
         x = 0
@@ -94,16 +91,18 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 
     return a + 1, line.previous
 
+
 # Regular expression that scans text for control codes, words, punction,
 # and runs of contiguous space.  If it works correctly, any possible
 # string will consist entirely of contiguous matches of this regular
 # expression.
 _text_findall = re.compile(r'([\u00a0]?)(\w*)([^\u00a0\w\s]*)([ \n]*)').findall
 
+
 def break_text_into_boxes(text, font_name, width_of, space_glue):
-    #print(repr(text))
+    # print(repr(text))
     for control_code, word, punctuation, space in _text_findall(text):
-        #print((control_code, word, punctuation, space))
+        # print((control_code, word, punctuation, space))
         if control_code:
             if control_code == '\u00a0':
                 yield Penalty(0, 1000)

@@ -7,6 +7,7 @@ Page = namedtuple('Page', 'width height')
 Column = namedtuple('Column', 'page id x y width height')
 Line = namedtuple('Line', 'previous column y graphics')
 
+
 def single_column_layout(width: float, height: float, top: float, bottom: float,
                          inner: float, outer: float) -> callable:
     """
@@ -64,7 +65,8 @@ def single_column_layout(width: float, height: float, top: float, bottom: float,
 
     return next_line
 
-def unroll(start_line: Line, end_line: Line) -> List[Line]:
+
+def unroll(start_line: Line, end_line: Line):
     """
     Unrolls a single-column layout of a document into a flat list of lines.
 
