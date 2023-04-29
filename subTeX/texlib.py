@@ -35,7 +35,6 @@ Reference:
     "Breaking Paragraphs into Lines", D.E. Knuth and M.F. Plass,
     chapter 3 of _Digital Typography_, CSLI Lecture Notes #78.
 """
-
 __version__ = "1.01"
 
 INFINITY = 1000
@@ -84,13 +83,17 @@ class Glue:
         else:
             return self.width + r * self.stretch
 
-    def is_glue(self):         return 1
+    def is_glue(self):
+        return 1
 
-    def is_box(self):          return 0
+    def is_box(self):
+        return 0
 
-    def is_penalty(self):      return 0
+    def is_penalty(self):
+        return 0
 
-    def is_forced_break(self): return 0
+    def is_forced_break(self):
+        return 0
 
 
 class Penalty:
@@ -135,6 +138,11 @@ class _BreakNode:
         return '<_BreakNode at %i>' % self.position
 
 
+# def is_Chinese(text):
+#     pattern = r'[\u4e00-\u9fa5]'
+#     return bool(re.match(pattern, text))
+
+
 class ObjectList(list):
     """
     Class representing a list of Box, Glue, and Penalty objects.
@@ -156,6 +164,8 @@ class ObjectList(list):
         box = self[i]
         if box.is_penalty() and box.penalty < INFINITY:
             return 1
+        # elif i > 1 and box.is_box() and is_Chinese(box.content[1]):
+        #     return 1
         elif i > 0 and box.is_glue() and self[i - 1].is_box():
             return 1
         else:
@@ -293,13 +303,12 @@ class ObjectList(list):
 
         m = len(self)
         if m == 0: return []  # No text, so no breaks
-
         # Precompute lists containing the numeric values for each box.
         # The variable names follow those in Knuth's description.
-        w = [0] * m;
-        y = [0] * m;
+        w = [0] * m
+        y = [0] * m
         z = [0] * m
-        p = [0] * m;
+        p = [0] * m
         f = [0] * m
         for i in range(m):
             box = self[i]
@@ -374,22 +383,7 @@ class ObjectList(list):
                     print('\tr=', r)
                     print('\tline=', A.line)
 
-                # #print(r)
-                # if r<-1 or B.is_forced_break():
-                #     #continue
-                #     # Deactivate node A
-                #     if len(active_nodes) == 1:
-                #         if self.debug:
-                #             print "Can't remove last node!"
-                #             # XXX how should this be handled?
-                #             # Raise an exception?
-                #     else:
-                #         if self.debug:
-                #             print '\tRemoving node', A
-                #         active_nodes.remove(A)
-
                 assert B.is_forced_break() == self.is_forced_break(i)
-
                 if r < -1 or B.is_forced_break():
                     active_nodes.remove(A)
 

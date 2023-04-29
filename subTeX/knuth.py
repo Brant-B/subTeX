@@ -7,6 +7,7 @@ from .texlib import ObjectList, Box, Glue, Penalty
 from .hyphenate import hyphenate_word
 
 _zero_width_break = Glue(0, 0, 0)
+_little_width_break = Glue(0, .5, .3333)
 
 
 def knuth_paragraph(actions, a, fonts, line, next_line,
@@ -27,12 +28,12 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
         first_indent = font.height
 
     olist = ObjectList()
-    olist.debug = True
+    olist.debug = False
 
     if first_indent:
         olist.append(Glue(first_indent, 0, 0))
 
-    space_width = width_of('m m') - width_of('mm')
+    space_width = width_of('m  m') - width_of('mm')
 
     space_glue = Glue(space_width, space_width * .5, space_width * .3333)
 
@@ -96,7 +97,13 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 # and runs of contiguous space.  If it works correctly, any possible
 # string will consist entirely of contiguous matches of this regular
 # expression.
-_text_findall = re.compile(r'([\u00a0]?)(\w*)([^\u00a0\w\s]*)([ \n]*)').findall
+pattern = r'([\u00a0]?)([\da-zA-Z]+|[\u4e00-\u9fa5])([^\u00a0\w\s]*)([ \n]*)'
+_text_findall = re.compile(pattern).findall
+
+
+def is_Chinese(text):
+    pattern = r'[\u4e00-\u9fa5]'
+    return bool(re.match(pattern, text))
 
 
 def break_text_into_boxes(text, font_name, width_of, space_glue):
@@ -117,6 +124,8 @@ def break_text_into_boxes(text, font_name, width_of, space_glue):
                 if i:
                     yield Penalty(width_of('-'), 100)
                 yield Box(width_of(string), (font_name, string))
+            if is_Chinese(word):
+                yield _little_width_break
         elif punctuation:
             yield Box(width_of(punctuation), (font_name, punctuation))
         if punctuation == '-':

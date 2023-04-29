@@ -35,11 +35,11 @@ def main(argv):
     )
     my_break = section_break, 'roman', ('texts', [(0, 'roman', '* * *')])
     actions = [
-        # (vskip, 0.75 * INCH),
-        # (centered_paragraph, [('title', '老人与海')]),
-        # my_break,
-        # (centered_paragraph, [('italic', '海明威')]),
-        # (vskip, 0.75 * INCH),
+        (vskip, 0.75 * INCH),
+        (centered_paragraph, [('title', '老人与海')]),
+        my_break,
+        (centered_paragraph, [('italic', '海明威')]),
+        (vskip, 0.75 * INCH),
     ]
     actions.extend(parse_essay(source_text, my_break))
 
@@ -94,7 +94,7 @@ def draw_header_and_footer(page, page_no, fonts, writer):
     writer.set_font(font)
     writer.draw_text(x, y, text)
 
-    font = fonts['italic']
+    font = fonts['roman']
     text = '老人与海'
     width = font.width_of(text)
     x = (page.width - width) / 2
