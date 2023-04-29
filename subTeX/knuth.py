@@ -97,7 +97,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 # and runs of contiguous space.  If it works correctly, any possible
 # string will consist entirely of contiguous matches of this regular
 # expression.
-pattern = r'([\u00a0]?)([\da-zA-Z]+|[\u4e00-\u9fa5])([^\u00a0\w\s]*)([ \n]*)'
+pattern = r'([\u00a0]?)([\da-zA-Z]+|[\u4e00-\u9fa5]|)([^\u00a0\w\s]*)([ \n]*)'
 _text_findall = re.compile(pattern).findall
 
 
