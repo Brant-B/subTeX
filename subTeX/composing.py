@@ -60,13 +60,6 @@ def new_page(actions, a, fonts, line, next_line):
     return call_action(actions, a + 1, fonts, line, next_line2)
 
 
-def new_recto_page(actions, a, fonts, line, next_line):
-    if line is None:
-        return a + 1, line
-    if line.column.id % 2:
-        line = next_line(line, 9999999, 0)
-    return new_page(actions, a, fonts, line, next_line)
-
 
 def blank_line(actions, a, fonts, line, next_line, graphic):
     line2 = next_line(line, 2, 10)
@@ -137,15 +130,9 @@ def section_break(actions, a, fonts, line, next_line, font_name, graphic):
 def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     """(Work-in-progress) Format text as a centered paragraph."""
 
-    # Just like a ragged paragraph, but with different x's. TODO: can
-    # probably be refectored to share more code; but can they shared
-    # more code without making them both more complicated?
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
 
-    # TODO: this is ugly, creating a throw-away line to learn the width
-    # of the upcoming column. Maybe ask for lines as we need them,
-    # instead?
     tmpline = next_line(line, leading, height)
 
     unwrapped_lines = _split_texts_into_lines(fonts_and_texts)

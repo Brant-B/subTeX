@@ -47,8 +47,6 @@ class QtWriter(object):
 
     def new_page(self):
         self.writer.newPage()
-        # if self.include_crop_marks:
-        #     self.draw_crop_marks()
 
     def set_font(self, font):
         self.painter.setFont(font.qt_font)

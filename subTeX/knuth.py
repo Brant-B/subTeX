@@ -102,8 +102,7 @@ _text_findall = re.compile(pattern).findall
 
 
 def is_Chinese(text):
-    pattern = r'[\u4e00-\u9fa5]'
-    return bool(re.match(pattern, text))
+    return bool(re.match(r'[\u4e00-\u9fa5]', text))
 
 
 def break_text_into_boxes(text, font_name, width_of, space_glue):
