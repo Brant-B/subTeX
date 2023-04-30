@@ -17,8 +17,8 @@
 ## 实例
 ### 中文实例
 ![img.png](attchments/img.png)
-[zh_example/book.pdf]()
+[zh_example/book.pdf](https://github.com/Brant-B/subTeX/blob/master/zh_example/book.pdf)
 
 ### 英文实例
 ![img.png](attchments/img1.png)
-[en_example/book.pdf]()
+[en_example/book.pdf](https://github.com/Brant-B/subTeX/blob/master/en_example/book.pdf)
