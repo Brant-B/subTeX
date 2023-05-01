@@ -37,6 +37,7 @@ def main(argv):
         0.8 * INCH, 0.8 * INCH
     )
     my_break = section_break, 'roman', ('texts', [(0, 'roman', '* * *')])
+
     actions = [
         (vskip, 0.75 * INCH),
         (centered_paragraph, [('title', 'The Old Man and the Sea')]),
@@ -72,7 +73,10 @@ def main(argv):
             function, *args = graphic
             if function == 'texts':
                 function = draw_texts
+            elif function == 'draw_texts':
+                function = draw_texts
             function(fonts, line, writer, *args)
+
 
 
 if __name__ == '__main__':

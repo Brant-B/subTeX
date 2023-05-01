@@ -1,11 +1,11 @@
-import sys
-
-from .knuth import knuth_paragraph
 from .skeleton import unroll
+import re
+from .texlib import ObjectList, Box, Glue, Penalty
+from .hyphenate import hyphenate_word
 
 INCH = 74
 INDENT = INCH / 4
-
+_zero_width_break = Glue(0, .5, .3333)
 
 def compose(actions, fonts, line, next_line):
     """
@@ -50,26 +50,6 @@ def vskip(actions, a, fonts, line, next_line, leading):
     """Action: adds `vskip` points of leading to the next line generated."""
     alt_next_line = add_leading(line, next_line, leading)
     return call_action(actions, a + 1, fonts, line, alt_next_line)
-
-
-def new_page(actions, a, fonts, line, next_line):
-    """Action: moves the next generated line onto a new page."""
-    if line is None:
-        return a + 1, line
-
-    def next_line2(line2, leading, height):
-        if line2 is line:
-            leading = 9999999
-        return next_line(line2, leading, height)
-
-    return call_action(actions, a + 1, fonts, line, next_line2)
-
-
-def blank_line(actions, a, fonts, line, next_line, graphic):
-    line2 = next_line(line, 2, 10)
-    if line2.column is not line.column:
-        line2 = next_line(line, 9999999, 0)
-    return a + 1, line2
 
 
 def section_break(actions, a, fonts, line, next_line, font_name, graphic):
@@ -177,6 +157,127 @@ def _split_texts_into_lines(fonts_and_texts):
             if piece:
                 line.append((font_name, piece))
     yield line
+
+
+
+def knuth_paragraph(actions, a, fonts, line, next_line,
+                    indent, first_indent, fonts_and_texts):
+    font_name = fonts_and_texts[0][0]
+    font = fonts[font_name]
+    width_of = font.width_of
+
+    leading = max(fonts[name].leading for name, text in fonts_and_texts)
+    height = max(fonts[name].height for name, text in fonts_and_texts)
+
+    line = next_line(line, leading, height)
+    line_lengths = [line.column.width]
+
+    if first_indent is True:
+        first_indent = font.height
+
+    olist = ObjectList()
+    olist.debug = False
+
+    if first_indent:
+        olist.append(Glue(first_indent, 0, 0))
+
+    space_width = width_of(' ')
+    space_glue = Glue(space_width, space_width * .5, space_width * .3333)
+
+    indented_lengths = [length - indent for length in line_lengths]
+
+    for font_name, text in fonts_and_texts:
+        font = fonts[font_name]
+        width_of = font.width_of
+        boxes = break_text_into_boxes(text, font_name, width_of, space_glue)
+        olist.extend(boxes)
+
+    if olist[-1] is space_glue:
+        olist.pop()
+
+    olist.add_closing_penalty()
+
+    for tolerance in 1, 2, 3, 4, 5, 6, 7:
+        try:
+            breaks = olist.compute_breakpoints(
+                indented_lengths, tolerance=tolerance)
+        except RuntimeError:
+            pass
+        else:
+            break
+    else:
+        print('FAIL')
+        breaks = [0, len(olist) - 1]
+
+    assert breaks[0] == 0
+    start = 0
+
+    for i, breakpoint in enumerate(breaks[1:]):
+        r = olist.compute_adjustment_ratio(start, breakpoint, i,
+                                           indented_lengths)
+
+        # r = 1.0
+
+        xlist = []
+        x = 0
+        for i in range(start, breakpoint):
+            box = olist[i]
+            if box.is_glue():
+                x += box.compute_width(r)
+            elif box.is_box():
+                font_name, text = box.content
+                xlist.append((x + indent, font_name, text))
+                x += box.width
+
+        bbox = olist[breakpoint]
+        if bbox.is_penalty() and bbox.width:
+            xlist.append((x + indent, font_name, '-'))
+
+        line.graphics.append(('texts', xlist))
+        line = next_line(line, leading, height)
+        start = breakpoint + 1
+
+    return a + 1, line.previous
+
+
+# Regular expression that scans text for control codes, words, punction,
+# and runs of contiguous space.  If it works correctly, any possible
+# string will consist entirely of contiguous matches of this regular
+# expression.
+pattern = r'([\u00a0]?)([\da-zA-Z]+|[\u4e00-\u9fa5]|)([^\u00a0\w\s]*)([ \n]*)'
+_text_findall = re.compile(pattern).findall
+
+
+def is_Chinese(text):
+    return bool(re.match(r'[\u4e00-\u9fa5]', text))
+
+
+def break_text_into_boxes(text, font_name, width_of, space_glue):
+    # print(repr(text))
+    for control_code, word, punctuation, space in _text_findall(text):
+        # print((control_code, word, punctuation, space))
+        if control_code:
+            if control_code == '\u00a0':
+                yield Penalty(0, 1000)
+                yield space_glue
+            else:
+                print('Unsupported control code: %r' % control_code)
+        if word:
+            strings = hyphenate_word(word)
+            if punctuation:
+                strings[-1] += punctuation
+            for i, string in enumerate(strings):
+                if i:
+                    yield Penalty(width_of('-'), 100)
+                yield Box(width_of(string), (font_name, string))
+            if is_Chinese(word):
+                yield _zero_width_break
+        elif punctuation:
+            yield Box(width_of(punctuation), (font_name, punctuation))
+        if punctuation == '-':
+            yield _zero_width_break
+        if space:
+            yield space_glue
 
 
 def draw_header_and_footer(page, page_no, fonts, writer, text):

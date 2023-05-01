@@ -1,5 +1,3 @@
-"""How we represent a document as it is laid out."""
-
 from collections import namedtuple
 
 Font = namedtuple('Font', 'ascent descent height leading')

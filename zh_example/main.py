@@ -72,6 +72,8 @@ def main(argv):
             function, *args = graphic
             if function == 'texts':
                 function = draw_texts
+            elif function == 'draw_texts':
+                function = draw_texts
             function(fonts, line, writer, *args)
 
 
