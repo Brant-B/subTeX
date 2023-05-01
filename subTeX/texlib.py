@@ -35,7 +35,6 @@ Reference:
     "Breaking Paragraphs into Lines", D.E. Knuth and M.F. Plass,
     chapter 3 of _Digital Typography_, CSLI Lecture Notes #78.
 """
-__version__ = "1.01"
 
 INFINITY = 1000
 
@@ -371,9 +370,6 @@ class ObjectList(list):
                 active_nodes.sort(key=key_f)
                 for A in active_nodes:
                     print(A.position, A.line, A.fitness_class)
-                print;
-                print
-
             # Loop over the list of active nodes, and compute the fitness
             # of the line formed by breaking at A and B.  The resulting
             breaks = []  # List of feasible breaks

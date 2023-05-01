@@ -7,10 +7,11 @@ from PySide2.QtWidgets import QApplication
 from subTeX.composing import (
     compose,
     vskip,
-    centered_paragraph,
+    centered_place,
     section_break,
     draw_header_and_footer,
     draw_texts, parse_essay,
+    ragged_place
 )
 from subTeX.skeleton import (
     single_column_layout,
@@ -40,12 +41,14 @@ def main(argv):
 
     actions = [
         (vskip, 0.75 * INCH),
-        (centered_paragraph, [('title', 'The Old Man and the Sea')]),
+        (centered_place, [('title', 'The Old Man and the Sea')]),
         my_break,
-        (centered_paragraph, [('roman', 'Ernest Hemingway')]),
+        (centered_place, [('roman', 'Ernest Hemingway')]),
         (vskip, 0.75 * INCH),
+        (ragged_place, [('subtitle', '1. first section')]),
     ]
     actions.extend(parse_essay(source_text, my_break))
+    actions.append((ragged_place, [('subtitle', 'The End')]))
 
     QApplication([])
     writer = QtWriter('book.pdf', page_width, page_height)
@@ -57,6 +60,7 @@ def main(argv):
         ('italic', 'Gentium Basic', 'Italic', 12),
         ('title', 'Gentium Basic', 'Regular', 30),
         ('roman', 'Gentium Basic', 'Regular', 12),
+        ('subtitle','Gentium Basic', 'Italic', 18)
     ])
 
     end_line = compose(actions, fonts, None, next_line)
@@ -76,7 +80,6 @@ def main(argv):
             elif function == 'draw_texts':
                 function = draw_texts
             function(fonts, line, writer, *args)
-
 
 
 if __name__ == '__main__':

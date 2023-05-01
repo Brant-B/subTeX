@@ -5,11 +5,12 @@ from PySide2.QtWidgets import QApplication
 from subTeX.composing import (
     compose,
     vskip,
-    centered_paragraph,
+    centered_place,
     section_break,
     draw_texts,
     draw_header_and_footer,
     parse_essay,
+    ragged_place
 
 )
 from subTeX.skeleton import (
@@ -39,10 +40,12 @@ def main(argv):
     my_break = section_break, 'roman', ('texts', [(0, 'roman', '* * *')])
     actions = [
         (vskip, 0.75 * INCH),
-        (centered_paragraph, [('title', '老人与海')]),
+        (centered_place, [('title', '老人与海')]),
         my_break,
-        (centered_paragraph, [('italic', '海明威')]),
+        (centered_place, [('italic', '海明威')]),
         (vskip, 0.75 * INCH),
+        (ragged_place, [('subtitle', '1. 第一章')]),
+        (vskip, .5 * INCH),
     ]
     actions.extend(parse_essay(source_text, my_break))
 
@@ -56,6 +59,7 @@ def main(argv):
         ('italic', 'Songti SC', 'Regular', 14),
         ('title', 'Heiti SC', 'Medium', 30),
         ('roman', '.PingFang SC', 'Regular', 12),
+        ('subtitle', 'Songti SC', 'Regular', 18),
     ])
 
     end_line = compose(actions, fonts, None, next_line)

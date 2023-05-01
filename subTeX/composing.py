@@ -7,6 +7,7 @@ INCH = 74
 INDENT = INCH / 4
 _zero_width_break = Glue(0, .5, .3333)
 
+
 def compose(actions, fonts, line, next_line):
     """
     Apply a list of actions to a line of text and return the resulting line.
@@ -35,7 +36,7 @@ def call_action(actions, a, fonts, line, next_line):
     return action(actions, a, fonts, line, next_line, *args)
 
 
-def add_leading(line, next_line, leading=9999999):
+def add_leading(line, next_line, leading=9999):
     """Add `leading` points to the leading of the first line after `line`."""
 
     def next_line2(line2, leading2, height):
@@ -101,7 +102,7 @@ def section_break(actions, a, fonts, line, next_line, font_name, graphic):
         # The separator landed on the next page! To avoid the extra
         # blank line at the bottom of the column, rebuild atop `line`,
         # and put a blank line after the separator instead.
-        line2 = next_line(line, 9999999, height)
+        line2 = next_line(line, 9999, height)
         line2.graphics.append(graphic)
         line3 = next_line(line2, leading, height)
         return a1, line3
@@ -111,8 +112,29 @@ def section_break(actions, a, fonts, line, next_line, font_name, graphic):
     return call_action(actions, a1, fonts, line3, a)
 
 
-def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
-    """(Work-in-progress) Format text as a centered paragraph."""
+def ragged_place(actions, a, fonts, line, next_line, fonts_and_texts):
+    leading = max(fonts[name].leading for name, text in fonts_and_texts)
+    height = max(fonts[name].height for name, text in fonts_and_texts)
+
+    tmpline = next_line(line, leading, height)
+
+    unwrapped_lines = _split_texts_into_lines(fonts_and_texts)
+    wrapped_lines = _wrap_long_lines(fonts, unwrapped_lines,
+                                     tmpline.column.width)
+
+    for tuples in wrapped_lines:
+        print(tuples)
+        line = next_line(line, leading, height)
+        x = 0
+        for font_name, text, width in tuples:
+            line.graphics.append(('texts', [(x, font_name, text)]))
+            x += width
+
+    return a + 1, line
+
+
+def centered_place(actions, a, fonts, line, next_line, fonts_and_texts):
+    """Format text as a centered paragraph."""
 
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
@@ -157,7 +179,6 @@ def _split_texts_into_lines(fonts_and_texts):
             if piece:
                 line.append((font_name, piece))
     yield line
-
 
 
 def knuth_paragraph(actions, a, fonts, line, next_line,
