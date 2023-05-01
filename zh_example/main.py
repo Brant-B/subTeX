@@ -26,7 +26,7 @@ INDENT = INCH / 4
 def main(argv):
     parser = argparse.ArgumentParser(description='typeset the source.txt')
     parser.parse_args(argv)
-    os.chdir(os.path.dirname(__file__))
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     with open('source.txt') as f:
         source_text = f.read()
 
@@ -51,9 +51,10 @@ def main(argv):
 
     QApplication([])
     writer = QtWriter('book.pdf', page_width, page_height)
-    writer.load_font('/Users/Skywalker/PycharmProjects/subTeX/fonts/PingFang.ttc')
-    writer.load_font('/Users/Skywalker/PycharmProjects/subTeX/fonts/STHeiti Medium.ttc')
-    writer.load_font('/Users/Skywalker/PycharmProjects/subTeX/fonts/Songti.ttc')
+    writer.load_font(os.path.join(script_dir, '../fonts/PingFang.ttc'))
+    writer.load_font(os.path.join(script_dir, '../fonts/STHeiti Medium.ttc'))
+    writer.load_font(os.path.join(script_dir, '../fonts/Songti.ttc'))
+
 
     fonts = writer.get_fonts([
         ('italic', 'Songti SC', 'Regular', 14),

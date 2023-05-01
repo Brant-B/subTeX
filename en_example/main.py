@@ -26,7 +26,7 @@ INDENT = INCH / 4
 def main(argv):
     parser = argparse.ArgumentParser(description='typeset the source.txt')
     parser.parse_args(argv)
-    os.chdir(os.path.dirname(__file__))
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     with open('source.txt') as f:
         source_text = f.read()
 
@@ -52,9 +52,9 @@ def main(argv):
 
     QApplication([])
     writer = QtWriter('book.pdf', page_width, page_height)
-    writer.load_font('/Users/Skywalker/PycharmProjects/subTeX/fonts/GenBasB.ttf')
-    writer.load_font('/Users/Skywalker/PycharmProjects/subTeX/fonts/GenBasI.ttf')
-    writer.load_font('/Users/Skywalker/PycharmProjects/subTeX/fonts/GenBasR.ttf')
+    writer.load_font(os.path.join(script_dir, '../fonts/GenBasB.ttf'))
+    writer.load_font(os.path.join(script_dir, '../fonts/GenBasI.ttf'))
+    writer.load_font(os.path.join(script_dir, '../fonts/GenBasR.ttf'))
 
     fonts = writer.get_fonts([
         ('italic', 'Gentium Basic', 'Italic', 12),
