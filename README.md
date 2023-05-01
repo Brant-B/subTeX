@@ -14,11 +14,13 @@
   - 空白间隔
   - 区划线（todo）
 ---
-## 实例
-### 中文实例
+## 示例
+### 中文示例
 ![img.png](attchments/img.png)
 [zh_example/book.pdf](https://github.com/Brant-B/subTeX/blob/master/zh_example/book.pdf)
 
-### 英文实例
+### 英文示例
 ![img.png](attchments/img1.png)
 [en_example/book.pdf](https://github.com/Brant-B/subTeX/blob/master/en_example/book.pdf)
+
+---
