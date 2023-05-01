@@ -1,5 +1,10 @@
 import sys
+
+from .knuth import knuth_paragraph
 from .skeleton import unroll
+
+INCH = 74
+INDENT = INCH / 4
 
 
 def compose(actions, fonts, line, next_line):
@@ -58,7 +63,6 @@ def new_page(actions, a, fonts, line, next_line):
         return next_line(line2, leading, height)
 
     return call_action(actions, a + 1, fonts, line, next_line2)
-
 
 
 def blank_line(actions, a, fonts, line, next_line, graphic):
@@ -173,3 +177,46 @@ def _split_texts_into_lines(fonts_and_texts):
             if piece:
                 line.append((font_name, piece))
     yield line
+
+
+def draw_header_and_footer(page, page_no, fonts, writer, text):
+    font = fonts['italic']
+    width = font.width_of(text)
+    x = (page.width - width) / 2
+    y = INCH * 3 / 4
+
+    writer.set_font(font)
+    writer.draw_text(x, y, text)
+
+    font = fonts['roman']
+    text = str(page_no)
+    width = font.width_of(text)
+    x = (page.width - width) / 2
+    y = page.height - INCH * 2 / 3
+
+    writer.set_font(font)
+    writer.draw_text(x, y, text)
+
+
+def draw_texts(fonts, line, writer, xlist):
+    current_font_name = None
+    for x, font_name, text in xlist:
+        if font_name != current_font_name:
+            font = fonts[font_name]
+            writer.set_font(font)
+            current_font_name = font_name
+        writer.draw_text(line.column.x + x,
+                         line.column.y + line.y - font.descent,
+                         text)
+
+
+def parse_essay(text, my_break):
+    sections = text.strip().split('\n\n\n')
+    for i, section in enumerate(sections):
+        if i:
+            yield my_break
+        section = section.strip()
+        paragraphs = section.split('\n\n')
+        for j, paragraph in enumerate(paragraphs):
+            indent = INDENT
+            yield knuth_paragraph, 0, indent, [('roman', paragraph.strip())]
