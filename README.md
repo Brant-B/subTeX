@@ -29,8 +29,10 @@
 [en_example/book.pdf](https://github.com/Brant-B/subTeX/blob/master/en_example/book.pdf)
 
 ### markdown示例
+subTeX 生成：
 ![md_img.png](attchments/md_img.png)
-
+markdown 软件生成：
+![markdown 软件生成](attchments/md_img2.png)
 ### tex 示例
 subTeX 生成：
 ![subTeX生成](attchments/tex1.png)
