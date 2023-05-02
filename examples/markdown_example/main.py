@@ -27,7 +27,6 @@ def main(argv):
         0.8 * INCH, 0.8 * INCH
     )
     actions = [
-        (vskip,.75 * INCH)
     ]
     actions.extend(markdown_parser(source_text))
 

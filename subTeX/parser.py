@@ -30,6 +30,11 @@ def markdown_parser(text):
             heading = line[3:]
             yield vskip, .25 * INCH
             yield ragged_place, [('subtitle', heading)]
+        elif line.strip() == '':
+            if in_paragraph:
+                yield from paragraph_parser(INDENT,paragraph)
+                in_paragraph = False
+                paragraph = ''
         else:
             if not in_paragraph:
                 in_paragraph = True

@@ -1,9 +1,9 @@
 # source
 ## 1.  first heading
-`subTeX`是一个受TeX 激发的Python 排版库。
+`subTeX` 是一个受TeX 激发的Python 排版库。
 
 ## 2. second heading
-实现了对一般Pdf排版的最基本功能
+实现了对一般Pdf 排版的最基本功能
 
 ## 3. 第三个标题
 
