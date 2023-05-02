@@ -1,25 +1,25 @@
 import argparse
 import os
 import sys
+
 from PySide2.QtWidgets import QApplication
+
 from subTeX.composing import (
     compose,
     vskip,
     centered_place,
     section_break,
-    draw_texts,
     draw_header_and_footer,
-    parse_essay,
-    ragged_place
-
+    draw_texts, ragged_place
 )
+from subTeX.parser import txt_parser
 from subTeX.skeleton import (
     single_column_layout,
     unroll
 )
 from subTeX.writer_qt import QtWriter
 
-INCH = 74
+INCH = 72
 INDENT = INCH / 4
 
 
@@ -37,30 +37,30 @@ def main(argv):
         1 * INCH, 1 * INCH,
         0.8 * INCH, 0.8 * INCH
     )
-    my_break = section_break, 'roman', ('texts', [(0, 'roman', '* * *')])
+    my_break = section_break, 'roman', ('texts', [(0, 'roman', '* * * * *')])
+
     actions = [
         (vskip, 0.75 * INCH),
-        (centered_place, [('title', '老人与海')]),
+        (centered_place, [('title', 'The Old Man and the Sea')]),
         my_break,
-        (centered_place, [('italic', '海明威')]),
+        (centered_place, [('roman', 'Ernest Hemingway')]),
         (vskip, 0.75 * INCH),
-        (ragged_place, [('subtitle', '1. 第一章')]),
-        (vskip, .5 * INCH),
+        (ragged_place, [('subtitle', '1. first section')]),
     ]
-    actions.extend(parse_essay(source_text, my_break))
+    actions.extend(txt_parser(source_text, my_break))
+    actions.append((ragged_place, [('subtitle', 'The End')]))
 
     QApplication([])
     writer = QtWriter('book.pdf', page_width, page_height)
-    writer.load_font(os.path.join(script_dir, '../fonts/PingFang.ttc'))
-    writer.load_font(os.path.join(script_dir, '../fonts/STHeiti Medium.ttc'))
-    writer.load_font(os.path.join(script_dir, '../fonts/Songti.ttc'))
-
+    writer.load_font(os.path.join(script_dir, '../../fonts/GenBasB.ttf'))
+    writer.load_font(os.path.join(script_dir, '../../fonts/GenBasI.ttf'))
+    writer.load_font(os.path.join(script_dir, '../../fonts/GenBasR.ttf'))
 
     fonts = writer.get_fonts([
-        ('italic', 'Songti SC', 'Regular', 14),
-        ('title', 'Heiti SC', 'Medium', 30),
-        ('roman', '.PingFang SC', 'Regular', 12),
-        ('subtitle', 'Songti SC', 'Regular', 18),
+        ('italic', 'Gentium Basic', 'Italic', 12),
+        ('title', 'Gentium Basic', 'Regular', 30),
+        ('roman', 'Gentium Basic', 'Regular', 12),
+        ('subtitle','Gentium Basic', 'Italic', 18)
     ])
 
     end_line = compose(actions, fonts, None, next_line)
@@ -72,7 +72,7 @@ def main(argv):
             current_page = line.column.page
             writer.new_page()
             page_no += 1
-            draw_header_and_footer(current_page, page_no, fonts, writer, '老人与海')
+            draw_header_and_footer(current_page, page_no, fonts, writer, 'the old man an the sea')
         for graphic in line.graphics:
             function, *args = graphic
             if function == 'texts':

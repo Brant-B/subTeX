@@ -16,8 +16,6 @@
 
 import re
 
-__version__ = '1.0.20070709'
-
 class Hyphenator:
     def __init__(self, patterns, exceptions=''):
         self.tree = {}
@@ -79,6 +77,7 @@ class Hyphenator:
             if p % 2:
                 pieces.append('')
         return pieces
+
 
 patterns = (
 # Knuth and Liang's original hyphenation patterns from classic TeX.
@@ -500,7 +499,6 @@ ves1tite vi1vip3a3r voice1p waste3w6a2 wave1g4 w3c week1n wide5sp wo4k1en
 wrap3aro writ6er. x1q xquis3 y5che3d ym5e5try y1stro yes5ter1y z3ian. z3o1phr
 z2z3w
 """)
-
 exceptions = """
 as-so-ciate as-so-ciates dec-li-na-tion oblig-a-tory phil-an-thropic present
 presents project projects reci-procity re-cog-ni-zance ref-or-ma-tion
@@ -512,12 +510,3 @@ hyphenate_word = hyphenator.hyphenate_word
 
 del patterns
 del exceptions
-
-if __name__ == '__main__':
-    import sys
-    if len(sys.argv) > 1:
-        for word in sys.argv[1:]:
-            print('-'.join(hyphenate_word(word)))
-    else:
-        import doctest
-        doctest.testmod(verbose=True)

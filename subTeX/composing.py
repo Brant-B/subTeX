@@ -3,7 +3,7 @@ import re
 from .texlib import ObjectList, Box, Glue, Penalty
 from .hyphenate import hyphenate_word
 
-INCH = 74
+INCH = 72
 INDENT = INCH / 4
 _zero_width_break = Glue(0, .5, .3333)
 
@@ -53,7 +53,7 @@ def vskip(actions, a, fonts, line, next_line, leading):
     return call_action(actions, a + 1, fonts, line, alt_next_line)
 
 
-def section_break(actions, a, fonts, line, next_line, font_name, graphic):
+def section_break(actions, a, fonts, line, next_line, font_name='roman', graphic='* * * * *'):
     """Action: insert a section break.
 
     In the middle of a page, a section break is simply a blank line.
@@ -113,6 +113,7 @@ def section_break(actions, a, fonts, line, next_line, font_name, graphic):
 
 
 def ragged_place(actions, a, fonts, line, next_line, fonts_and_texts):
+    """ format the line as heading"""
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
 
@@ -284,6 +285,8 @@ def break_text_into_boxes(text, font_name, width_of, space_glue):
             else:
                 print('Unsupported control code: %r' % control_code)
         if word:
+            if is_Chinese(word):
+                yield _zero_width_break
             strings = hyphenate_word(word)
             if punctuation:
                 strings[-1] += punctuation
@@ -291,8 +294,7 @@ def break_text_into_boxes(text, font_name, width_of, space_glue):
                 if i:
                     yield Penalty(width_of('-'), 100)
                 yield Box(width_of(string), (font_name, string))
-            if is_Chinese(word):
-                yield _zero_width_break
+
         elif punctuation:
             yield Box(width_of(punctuation), (font_name, punctuation))
         if punctuation == '-':
@@ -331,14 +333,3 @@ def draw_texts(fonts, line, writer, xlist):
                          line.column.y + line.y - font.descent,
                          text)
 
-
-def parse_essay(text, my_break):
-    sections = text.strip().split('\n\n\n')
-    for i, section in enumerate(sections):
-        if i:
-            yield my_break
-        section = section.strip()
-        paragraphs = section.split('\n\n')
-        for j, paragraph in enumerate(paragraphs):
-            indent = INDENT
-            yield knuth_paragraph, 0, indent, [('roman', paragraph.strip())]
