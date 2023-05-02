@@ -10,9 +10,14 @@
 - 连字算法
 - 标记语言常有的功能
   - 标题
-  - 子标题（todo）
+  - 子标题
   - 空白间隔
-  - 区划线（todo）
+## version 2
+  增加了对Markdown 文本和 tex 文本的支持。
+将markdown和tex 解析到 subTeX 使用的命令，完成Pdf 格式的输出。
+下面有示例与对比。
+可以到 example 文件夹中查看文件。
+
 ---
 ## 示例
 ### 中文示例
@@ -25,5 +30,12 @@
 
 ### markdown示例
 ![md_img.png](attchments/md_img.png)
+
+### tex 示例
+subTeX 生成：
+![subTeX生成](attchments/tex1.png)
+
+plain TeX 引擎生成：
+![plainTeX生成](attchments/tex2.png)
 
 ---

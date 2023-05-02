@@ -5,11 +5,11 @@ from PySide2.QtWidgets import QApplication
 from subTeX.composing import (
     compose,
     vskip,
-    centered_place,
+    centerline,
     section_break,
     draw_texts,
     draw_header_and_footer,
-    ragged_place
+    beginsection
 
 )
 from subTeX.parser import txt_parser
@@ -40,11 +40,11 @@ def main(argv):
     my_break = section_break, 'roman', ('texts', [(0, 'roman', '* * *')])
     actions = [
         (vskip, 0.75 * INCH),
-        (centered_place, [('title', '老人与海')]),
+        (centerline, [('title', '老人与海')]),
         my_break,
-        (centered_place, [('italic', '海明威')]),
+        (centerline, [('italic', '海明威')]),
         (vskip, 0.75 * INCH),
-        (ragged_place, [('subtitle', '1. 第一章')]),
+        (beginsection, [('subtitle', '1. 第一章')]),
         (vskip, .5 * INCH),
     ]
     actions.extend(txt_parser(source_text, my_break))

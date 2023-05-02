@@ -52,7 +52,6 @@ def vskip(actions, a, fonts, line, next_line, leading):
     alt_next_line = add_leading(line, next_line, leading)
     return call_action(actions, a + 1, fonts, line, alt_next_line)
 
-
 def section_break(actions, a, fonts, line, next_line, font_name='roman', graphic='* * * * *'):
     """Action: insert a section break.
 
@@ -112,7 +111,7 @@ def section_break(actions, a, fonts, line, next_line, font_name='roman', graphic
     return call_action(actions, a1, fonts, line3, a)
 
 
-def ragged_place(actions, a, fonts, line, next_line, fonts_and_texts):
+def beginsection(actions, a, fonts, line, next_line, fonts_and_texts):
     """ format the line as heading"""
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
@@ -134,7 +133,7 @@ def ragged_place(actions, a, fonts, line, next_line, fonts_and_texts):
     return a + 1, line
 
 
-def centered_place(actions, a, fonts, line, next_line, fonts_and_texts):
+def centerline(actions, a, fonts, line, next_line, fonts_and_texts):
     """Format text as a centered paragraph."""
 
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
@@ -332,4 +331,3 @@ def draw_texts(fonts, line, writer, xlist):
         writer.draw_text(line.column.x + x,
                          line.column.y + line.y - font.descent,
                          text)
-

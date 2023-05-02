@@ -4,63 +4,46 @@ import sys
 
 from PySide2.QtWidgets import QApplication
 
-from subTeX.composing import (
-    compose,
-    vskip,
-    centerline,
-    section_break,
-    draw_header_and_footer,
-    draw_texts, beginsection
-)
-from subTeX.parser import txt_parser
-from subTeX.skeleton import (
-    single_column_layout,
-    unroll
-)
+from subTeX.composing import compose, draw_header_and_footer, draw_texts
+from subTeX.parser import tex_parser
+from subTeX.skeleton import single_column_layout, unroll
 from subTeX.writer_qt import QtWriter
 
 INCH = 72
 INDENT = INCH / 4
+page_width = 8.27 * INCH
+page_height = 11.69 * INCH
 
 
 def main(argv):
     parser = argparse.ArgumentParser(description='typeset the source.txt')
     parser.parse_args(argv)
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    with open('source.txt') as f:
+    with open('source.tex') as f:
         source_text = f.read()
 
-    page_width = 8.27 * INCH
-    page_height = 11.69 * INCH
     next_line = single_column_layout(
         page_width, page_height,
         1 * INCH, 1 * INCH,
         0.8 * INCH, 0.8 * INCH
     )
-    my_break = section_break, 'roman', ('texts', [(0, 'roman', '* * * * *')])
-
     actions = [
-        (vskip, 0.75 * INCH),
-        (centerline, [('title', 'The Old Man and the Sea')]),
-        my_break,
-        (centerline, [('roman', 'Ernest Hemingway')]),
-        (vskip, 0.75 * INCH),
-        (beginsection, [('subtitle', '1. first section')]),
     ]
-    actions.extend(txt_parser(source_text, my_break))
-    actions.append((beginsection, [('subtitle', 'The End')]))
+    actions.extend(tex_parser(source_text))
 
     QApplication([])
-    writer = QtWriter('book.pdf', page_width, page_height)
+    writer = QtWriter('output.pdf', page_width, page_height)
     writer.load_font(os.path.join(script_dir, '../../fonts/GenBasB.ttf'))
     writer.load_font(os.path.join(script_dir, '../../fonts/GenBasI.ttf'))
     writer.load_font(os.path.join(script_dir, '../../fonts/GenBasR.ttf'))
 
     fonts = writer.get_fonts([
-        ('italic', 'Gentium Basic', 'Italic', 12),
-        ('title', 'Gentium Basic', 'Regular', 30),
+        ('italic', 'Gentium Basic', 'Italic', 14),
+        ('bigrm', 'Gentium Basic', 'Regular', 30),
         ('roman', 'Gentium Basic', 'Regular', 12),
-        ('subtitle','Gentium Basic', 'Italic', 18)
+        ('subtitle', 'Gentium Basic', 'Italic', 18),
+        ('bf', 'Gentium Basic', 'Bold', 18)
+
     ])
 
     end_line = compose(actions, fonts, None, next_line)
@@ -72,7 +55,7 @@ def main(argv):
             current_page = line.column.page
             writer.new_page()
             page_no += 1
-            draw_header_and_footer(current_page, page_no, fonts, writer, 'the old man an the sea')
+            draw_header_and_footer(current_page, page_no, fonts, writer, 'this is header')
         for graphic in line.graphics:
             function, *args = graphic
             if function == 'texts':
