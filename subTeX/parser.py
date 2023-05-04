@@ -1,6 +1,7 @@
 import re
 
-from subTeX.composing import INDENT, knuth_paragraph, centerline, vskip, INCH, beginsection
+from subTeX.composing import knuth_paragraph, centerline, vskip,beginsection
+from subTeX.writer_qt import INDENT,INCH
 
 """
 parse markdown_code to actions

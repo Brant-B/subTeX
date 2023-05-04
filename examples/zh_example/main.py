@@ -7,8 +7,6 @@ from subTeX.composing import (
     vskip,
     centerline,
     section_break,
-    draw_texts,
-    draw_header_and_footer,
     beginsection
 
 )
@@ -17,10 +15,8 @@ from subTeX.skeleton import (
     single_column_layout,
     unroll
 )
-from subTeX.writer_qt import QtWriter
+from subTeX.writer_qt import QtWriter, draw_texts, draw_header_and_footer, INCH
 
-INCH = 72
-INDENT = INCH / 4
 
 
 def main(argv):
@@ -54,7 +50,6 @@ def main(argv):
     writer.load_font(os.path.join(script_dir, '../../fonts/PingFang.ttc'))
     writer.load_font(os.path.join(script_dir, '../../fonts/STHeiti Medium.ttc'))
     writer.load_font(os.path.join(script_dir, '../../fonts/Songti.ttc'))
-
 
     fonts = writer.get_fonts([
         ('italic', 'Songti SC', 'Regular', 14),

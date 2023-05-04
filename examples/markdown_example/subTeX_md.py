@@ -1,18 +1,17 @@
 import argparse
 import os
 import sys
-
 from PySide2.QtWidgets import QApplication
 
-from subTeX.composing import section_break, vskip, compose, draw_header_and_footer, draw_texts
+from subTeX.composing import compose
 from subTeX.parser import markdown_parser
 from subTeX.skeleton import single_column_layout, unroll
-from subTeX.writer_qt import QtWriter
+from subTeX.writer_qt import QtWriter,draw_texts, draw_header_and_footer, INCH
 
-INCH = 72
-INDENT = INCH / 4
+
 page_width = 8.27 * INCH
 page_height = 11.69 * INCH
+
 
 def main(argv):
     parser = argparse.ArgumentParser(description='typeset the source.txt')

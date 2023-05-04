@@ -3,8 +3,6 @@ import re
 from .texlib import ObjectList, Box, Glue, Penalty
 from .hyphenate import hyphenate_word
 
-INCH = 72
-INDENT = INCH / 4
 _zero_width_break = Glue(0, .5, .3333)
 
 
@@ -302,32 +300,6 @@ def break_text_into_boxes(text, font_name, width_of, space_glue):
             yield space_glue
 
 
-def draw_header_and_footer(page, page_no, fonts, writer, text):
-    font = fonts['italic']
-    width = font.width_of(text)
-    x = (page.width - width) / 2
-    y = INCH * 3 / 4
-
-    writer.set_font(font)
-    writer.draw_text(x, y, text)
-
-    font = fonts['roman']
-    text = str(page_no)
-    width = font.width_of(text)
-    x = (page.width - width) / 2
-    y = page.height - INCH * 2 / 3
-
-    writer.set_font(font)
-    writer.draw_text(x, y, text)
 
 
-def draw_texts(fonts, line, writer, xlist):
-    current_font_name = None
-    for x, font_name, text in xlist:
-        if font_name != current_font_name:
-            font = fonts[font_name]
-            writer.set_font(font)
-            current_font_name = font_name
-        writer.draw_text(line.column.x + x,
-                         line.column.y + line.y - font.descent,
-                         text)
+

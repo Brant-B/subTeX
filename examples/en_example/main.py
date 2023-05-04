@@ -9,18 +9,14 @@ from subTeX.composing import (
     vskip,
     centerline,
     section_break,
-    draw_header_and_footer,
-    draw_texts, beginsection
+    beginsection
 )
 from subTeX.parser import txt_parser
 from subTeX.skeleton import (
     single_column_layout,
     unroll
 )
-from subTeX.writer_qt import QtWriter
-
-INCH = 72
-INDENT = INCH / 4
+from subTeX.writer_qt import QtWriter, draw_texts, draw_header_and_footer, INCH
 
 
 def main(argv):
